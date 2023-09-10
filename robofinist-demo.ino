@@ -2,6 +2,7 @@
 #define lib_h
 #include <lib.h>
 #include <Servo.h>
+Servo Servo1;
 
 long time_stamp = 0;
 Motor motor1(5,6); //поменять 
@@ -24,6 +25,18 @@ void motors_stop(){
     motor2.stop();
 }
 //Повороты
+//движение по линии 
+void liner(){
+    value = digitalRead(lineSensorPin)
+      if (lineSensorValue == HIGH) {
+        motor1.forward(255);
+        motor2.backward(150);
+  }
+  else {
+        motor2.forward(255);
+        motor1.backward(230);
+  }
+}
 void Turn_left(int speed1, int speed2, int deltaTime) {
     motor1.forward(speed1);
     motor2.backward(speed2);
@@ -49,18 +62,6 @@ void white_beat(){
     wlile (millis - time_stamp>5000){
       liner();
     }
-}
-//движение по линии 
-void liner(){
-    value = digitalRead(lineSensorPin)
-      if (lineSensorValue == HIGH) {
-        motor1.forward(255);
-        motor2.backward(150);
-  }
-  else {
-        motor2.forward(255);
-        motor1.backward(230);
-  }
 }
 void black_beat(){
   motors_forward(255,255)

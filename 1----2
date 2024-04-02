@@ -1,0 +1,93 @@
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+// Define CE and CSN pins
+#define CE_PIN  7
+#define CSN_PIN 8
+
+// Define pipe address
+const byte address[6] = "00001";
+
+// Create NRF24L01 object
+RF24 radio(CE_PIN, CSN_PIN);
+
+void setup() {
+  Serial.begin(9600);
+  // Initialize NRF24L01
+  radio.begin();
+  radio.setChannel(100); // Set communication channel
+  radio.setDataRate(RF24_250KBPS); // Set data rate
+  radio.setPALevel(RF24_PA_MAX); // Set power level
+  radio.setRetries(15, 15); // Set retries for failed transmissions
+  radio.openWritingPipe(address); // Open writing pipe with defined address
+}
+
+void loop() {
+  // Define message to send
+  const char message[] = "Hello World!";
+
+  // Send message
+  radio.stopListening(); // Switch to transmit mode
+  radio.write(&message, sizeof(message));
+  Serial.println("Message sent: ");
+  Serial.println(message);
+
+  // Wait for response
+  radio.startListening(); // Switch to receive mode
+  if (radio.available()) {
+    char receivedMessage[sizeof(message)];
+    radio.read(&receivedMessage, sizeof(receivedMessage));
+    Serial.println("Received message: ");
+    Serial.println(receivedMessage);
+  }
+  delay(1000);
+}
+
+
+
+____________
+
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+// Define CE and CSN pins
+#define CE_PIN  7
+#define CSN_PIN 8
+
+// Define pipe address
+const byte address[6] = "00001";
+
+// Create NRF24L01 object
+RF24 radio(CE_PIN, CSN_PIN);
+
+void setup() {
+  Serial.begin(9600);
+  // Initialize NRF24L01
+  radio.begin();
+  radio.setChannel(100); // Set communication channel
+  radio.setDataRate(RF24_250KBPS); // Set data rate
+  radio.setPALevel(RF24_PA_MAX); // Set power level
+  radio.openReadingPipe(0, address); // Open reading pipe with defined address
+  radio.startListening(); // Start listening for messages
+}
+
+void loop() {
+  // Check for received message
+  if (radio.available()) {
+    char receivedMessage[32];
+    radio.read(&receivedMessage, sizeof(receivedMessage));
+    Serial.println("Received message: ");
+    Serial.println(receivedMessage);
+
+    // Send response
+    radio.stopListening(); // Switch to transmit mode
+    const char response[] = "Acknowledged!";
+    radio.write(&response, sizeof(response));
+    Serial.println("Response sent: ");
+    Serial.println(response);
+
+    radio.startListening(); // Switch back to receive mode
+  }
+}
